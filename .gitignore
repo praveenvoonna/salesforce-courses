@@ -1,0 +1,11 @@
+# MkDocs build output
+site/
+
+# Python virtual environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# OS / editor cruft
+.DS_Store
