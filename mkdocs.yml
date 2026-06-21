@@ -12,10 +12,10 @@ extra_css:
 theme:
   name: material
   language: en
+  logo: assets/logo.svg
+  favicon: assets/favicon.svg
   icon:
-    logo: material/cloud
     repo: fontawesome/brands/github
-  favicon: https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/material/templates/assets/images/favicon.png
   font:
     text: Inter
     code: JetBrains Mono
@@ -51,6 +51,9 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+
+hooks:
+  - hooks/reading_time.py
 
 plugins:
   - search

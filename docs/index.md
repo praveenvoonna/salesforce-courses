@@ -16,6 +16,17 @@ Salesforce skills — explained in plain English, with analogies and ready-to-sa
 
 </div>
 
+<div class="welcome-note" markdown>
+
+**A little note for you 💛**
+
+This whole site was put together just for you. Take it one lesson at a time, at your own pace —
+there's no rush and no such thing as a silly question. Every topic starts with a simple, everyday
+analogy, so you'll always have something to hold on to before the details arrive. You've got this,
+and I'm cheering you on the whole way. 🚀
+
+</div>
+
 !!! tip "How to read this"
     Pick a course from the **top tabs** (or the cards below) and work the lessons **in order**
     (00 → end). Every lesson follows the same shape:
