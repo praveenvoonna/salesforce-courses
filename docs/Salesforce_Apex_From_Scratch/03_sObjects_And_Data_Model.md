@@ -96,6 +96,39 @@ This powers generic, reusable code (and security checks — Lesson 11).
 
 ---
 
+## 🌍 Real-World Example
+
+**Modeling course enrollment for a university.** A student can take many courses and a course has
+many students — a classic **many-to-many**. You model it with a **junction object**:
+
+- `Student__c` and `Course__c` are the two ends.
+- `Enrollment__c` sits between them with **two master-detail** fields (`Student__c`, `Course__c`).
+
+Now you get powerful behavior for free: a **roll-up summary** on `Student__c` can sum
+`Credits__c` across all enrollments, and deleting a `Course__c` **cascades** — every related
+`Enrollment__c` is removed automatically, so you never leave orphaned rows.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Relationship fields store an Id** — a lookup/master-detail field physically holds the
+  18-character Id of the related row; it's a foreign key the platform indexes.
+- **Master-detail is a stricter FK** — it adds **required parent**, **ownership/sharing
+  inheritance**, and **cascade delete**. Limits: **max 2** master-detail and **~25 lookups** per
+  object; a junction's *first* MD controls sharing and the detail's owner.
+- **Polymorphic relationships** — some fields point to **multiple object types**: `Task.WhatId`
+  (Account/Opportunity/…), `OwnerId` (User or Queue). Query them with `TYPEOF` in SOQL.
+- **External Ids & upsert** — marking a field as **External Id** lets `upsert` match on it instead
+  of the Salesforce Id, which is how integrations sync without storing internal Ids.
+- **Only queried fields are populated** — an sObject in memory holds *just* the fields you
+  `SELECT`. Touching an unqueried field throws **`SObjectException: SObject row was retrieved via
+  SOQL without querying the requested field`** — a very common runtime error.
+- **Describe is metadata at runtime** — `Schema.getGlobalDescribe()` and `SObjectType.getDescribe()`
+  read the data model live, but they're **expensive**; cache the result rather than calling per row.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Objects are tables, records are rows, fields are columns; custom ones end in **`__c`** and

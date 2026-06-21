@@ -108,6 +108,48 @@ and rolled back like normal errors). You can define custom exceptions:
 
 ---
 
+## 🌍 Real-World Example
+
+**Deduplicating a marketing list of 50,000 Leads before a campaign.** The data team loads leads
+from three sources and needs to keep only the newest record per email:
+
+```apex
+Map<String, Lead> latestByEmail = new Map<String, Lead>();
+for (Lead l : incomingLeads) {
+    if (l.Email == null) continue;
+    String key = l.Email.toLowerCase();                 // normalize
+    Lead seen = latestByEmail.get(key);
+    if (seen == null || l.CreatedDate > seen.CreatedDate) {
+        latestByEmail.put(key, l);                       // keep the newest
+    }
+}
+List<Lead> deduped = latestByEmail.values();
+```
+
+Picking the **right collection** (a `Map` keyed by email) turns what would be an O(n²)
+nested-loop scan — which would blow the **CPU limit** at 50k records — into a single O(n) pass.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Value vs reference types** — primitives (`Integer`, `Boolean`, `Date`) are passed **by value**;
+  sObjects and collections are passed **by reference**, so a method that mutates a `List` argument
+  changes the caller's list too.
+- **`Decimal` vs `Double`** — `Decimal` is arbitrary-precision (backed by Java `BigDecimal`) and
+  tracks **scale**, so `19.99` stays exact for money. `Double` is IEEE-754 floating point and can
+  produce rounding drift — never use it for currency.
+- **Strings are immutable** — every concatenation creates a new object on the **heap** (6 MB
+  limit), so building big strings in a loop is a hidden heap/CPU cost; use a `List<String>` +
+  `String.join`.
+- **`Map`/`Set` semantics** — they rely on `hashCode`/`equals`. For sObjects, equality compares
+  **all loaded fields**, which is why a `Set<Account>` can behave surprisingly; prefer
+  `Set<Id>`/`Map<Id, …>`.
+- **Integer math** — division truncates (`5/2 == 2`) and overflow silently **wraps** at 2³¹; use
+  `Long`/`Decimal` for large or fractional values.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"The three collections are **List** (ordered), **Set** (unique), and **Map** (key→value);

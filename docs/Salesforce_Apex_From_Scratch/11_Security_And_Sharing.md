@@ -94,6 +94,50 @@ Prefer **bind variables**; fall back to `escapeSingleQuotes()` only when forced.
 
 ---
 
+## 🌍 Real-World Example
+
+**A community/Experience Cloud portal leaks data because Apex ran in system mode.** An
+`@AuraEnabled` controller returned `[SELECT Id, Name, SSN__c FROM Patient__c]` to a logged-in
+patient — but Apex ignores FLS by default, so it returned **every** patient's SSN, including
+fields the user should never see.
+
+The fix enforces the user's real permissions at the query:
+
+```apex
+@AuraEnabled(cacheable=true)
+public static List<Patient__c> getMyRecords() {
+    return [SELECT Id, Name, SSN__c FROM Patient__c
+            WHERE OwnerId = :UserInfo.getUserId()
+            WITH USER_MODE];                      // enforces CRUD + FLS + sharing
+}
+```
+
+Now the platform strips inaccessible fields and rows automatically — the single most important
+habit for any code exposed to external or low-privilege users.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **System vs user mode** — Apex runs in **system mode** (ignores CRUD/FLS; ignores sharing unless
+  `with sharing`). `WITH USER_MODE` / `AccessLevel.USER_MODE` switch the *operation* to **user
+  mode**, enforcing record + object + field security in one shot.
+- **`with sharing` ≠ CRUD/FLS** — it only filters **rows** the user can't see; it does **nothing**
+  for object or field permissions. This gap is the most common security interview trap.
+- **Sharing is computed, not stored per check** — record visibility comes from **OWD + role
+  hierarchy + sharing rules + manual/Apex shares**, materialized in share tables the optimizer
+  joins against; `with sharing` makes Apex respect those tables.
+- **`stripInaccessible` returns a decision** — `Security.stripInaccessible` gives an
+  `SObjectAccessDecision` you can inspect (`getRemovedFields()`) and is ideal for sanitizing
+  untrusted **inbound** payloads before DML.
+- **Dynamic SOQL injection** — `:binds` are parameterized; if you must concatenate, only
+  `String.escapeSingleQuotes` (and allow-listing field/order-by names) is safe — escaping doesn't
+  protect identifiers.
+- **Secrets belong in metadata** — Named Credentials and **Protected** Custom Metadata/Custom
+  Settings keep tokens out of code and out of `SELECT`-able data.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Apex defaults to **system mode**, so I enforce security explicitly: **sharing** for records,

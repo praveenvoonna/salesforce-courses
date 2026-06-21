@@ -114,6 +114,49 @@ across many objects. Use **SOQL** when you know the object and want precise filt
 
 ---
 
+## 🌍 Real-World Example
+
+**A support dashboard that finds "all open cases for a customer and their contacts."** Instead of
+querying Cases, then looping to fetch each Contact, you do it in **one relationship query**:
+
+```apex
+Account a = [
+    SELECT Id, Name,
+           (SELECT Id, Subject, Status FROM Cases WHERE Status != 'Closed'),
+           (SELECT Id, Name, Email FROM Contacts)
+    FROM Account
+    WHERE Id = :recordId
+];
+Integer openCases = a.Cases.size();
+```
+
+When a support agent types "Acme" into global search and isn't sure whether it's an Account,
+Contact, or Case, **SOSL** is what runs behind the scenes — one full-text search across many
+objects at once.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The query optimizer & selectivity** — every SOQL goes through Salesforce's **cost-based
+  optimizer**. A filter is **selective** if it hits an **indexed** field returning a small
+  fraction of rows. Non-selective filters on large objects throw
+  **`QueryException: Non-selective query against large object type`** (the 200k-row guardrail).
+- **Standard vs custom indexes** — Id, Name, OwnerId, lookups, External Ids, and `CreatedDate`
+  are indexed by default. You can request **custom indexes**; `!=`, `NOT`, leading `%` wildcards,
+  and formula fields generally **can't** use them.
+- **Bind variables are pre-parsed** — `:var` is bound *before* execution, so it's immune to
+  injection and lets the optimizer plan the query. String concatenation defeats both.
+- **SOQL for-loops chunk results** — `for (Account a : [SELECT … ])` streams rows in batches of
+  **200**, keeping heap low; a plain `List<Account> x = [ … ]` loads everything at once.
+- **`QueryLocator` vs list** — `Database.getQueryLocator` (Batch Apex) can address up to **50
+  million** rows, far beyond the 50k synchronous retrieval cap.
+- **SOSL specifics** — search runs against a separate **search index** (eventually consistent, so
+  brand-new records may lag), returns a `List<List<SObject>>` in `RETURNING` order, and caps at
+  2,000 rows.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"SOQL has **no `SELECT *`** — I list fields explicitly and use **bind variables (`:var`)**

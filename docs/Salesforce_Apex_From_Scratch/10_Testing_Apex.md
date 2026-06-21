@@ -114,6 +114,50 @@ Implement **`HttpCalloutMock`** (or `WebServiceMock` for SOAP) to return canned 
 
 ---
 
+## 🌍 Real-World Example
+
+**A team's production deploy is blocked at 73% coverage the day before go-live.** The culprit is a
+class with deep `if/else` branches only tested on the happy path. Rather than write "coverage
+theater," they add **behavior-driven** tests using a shared factory:
+
+```apex
+@isTest
+private class DiscountServiceTest {
+    @testSetup static void setup() { TestDataFactory.createAccountsWithOpps(5); }
+
+    @isTest static void appliesVipDiscountInBulk() {
+        List<Opportunity> opps = [SELECT Id, Amount FROM Opportunity];
+        Test.startTest();
+        DiscountService.apply(opps);            // exercise the real path, bulk
+        Test.stopTest();
+        for (Opportunity o : [SELECT Amount, Discount__c FROM Opportunity])
+            Assert.isTrue(o.Discount__c > 0, 'VIP opp should be discounted');
+    }
+}
+```
+
+Adding the **edge** and **failure** branches (non-VIP, null amount) both raised coverage past 75%
+*and* caught a real null-pointer bug — coverage as a side effect of testing behavior.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Tests run in a rolled-back transaction** — every test method's DML is **automatically rolled
+  back** at the end, so the org is never polluted; that's why they can't see real data.
+- **`@testSetup` runs once, then re-rolls** — setup data is created once per class and **restored**
+  (re-inserted) before each test method, which is faster than building data in every method.
+- **`Test.startTest/stopTest`** does two jobs: gives the code between them a **fresh limit
+  context**, and forces **enqueued async jobs to run** synchronously at `stopTest()`.
+- **Coverage is line-based, per class** — the platform records which executable lines ran; the
+  **org-wide** figure must be **≥ 75%** to deploy, and **every trigger** needs **> 0%**.
+- **Mocking interfaces** — `Test.setMock(HttpCalloutMock.class, …)` swaps the HTTP layer;
+  `Test.loadData` and **`@TestVisible`** expose private members so you can assert internals.
+- **Determinism rules** — `SeeAllData=true` is discouraged because it makes tests depend on org
+  state; rely on factories and never hard-code Ids, which differ per org/run.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Production deploys need **≥75% coverage** and passing tests — testing is a hard gate, not

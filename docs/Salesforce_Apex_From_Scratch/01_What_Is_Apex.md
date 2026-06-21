@@ -83,6 +83,38 @@ and doesn't need test classes.
 
 ---
 
+## 🌍 Real-World Example
+
+**A subscription business auto-invoices when a deal closes.** The moment an `Opportunity` flips
+to *Closed Won*, an Apex trigger:
+
+1. Creates an `Invoice__c` record from the deal's line items (DML, next to the data).
+2. Calls the **Stripe API** with a callout to charge the customer's card.
+3. Generates a PDF and emails it to the billing contact.
+
+All of this runs **server-side in one transaction**, inches from the database. Doing the same
+thing from a browser would mean shipping records back and forth across the network for every step
+— slower, less secure, and impossible to wrap in a single rollback-safe unit.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Compilation pipeline** — when you save a class, Apex is **compiled to bytecode** and stored as
+  metadata in your org. At run time the platform executes that bytecode in a **sandboxed,
+  interpreted runtime** — there's no `main()`, no threads you can spawn, and no file-system access.
+- **Execution-context lifecycle** — each entry point (trigger, `@AuraEnabled` method, batch chunk,
+  REST call) spins up a **fresh context** with its own **governor-limit counters** reset to zero.
+  When the context ends, `static` variables are discarded.
+- **`static` lives for the transaction** — a `static` variable persists across all code in the
+  same execution context (used for caching and trigger recursion guards), then vanishes.
+- **One transaction, many actors** — your Apex shares the request with validation rules, flows,
+  roll-up summaries, and other automation in a strict **order of execution** (Lesson 05).
+- **API-version pinning** — a class compiled against API `45.0` keeps its old behaviour even after
+  the org upgrades, which is how Salesforce avoids breaking your code three times a year.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Apex is a **strongly-typed, Java-like** language that runs **on-platform**, with SOQL and

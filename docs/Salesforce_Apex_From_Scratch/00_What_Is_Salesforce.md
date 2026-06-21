@@ -63,6 +63,39 @@ tools can't express the logic. Interviewers love candidates who know *when not t
 
 ---
 
+## 🌍 Real-World Example
+
+**Northern Trail Outfitters (a retailer) runs its entire business in one org.** Sales reps track
+deals on `Opportunity`, support agents handle `Case` records, and marketers run campaigns — all
+on the **same instance**, sharing the same servers as thousands of other companies.
+
+On Black Friday, a junior developer ships a trigger with an accidental query inside a loop. In a
+single-tenant world that could slow the whole server. Here, the platform simply throws a
+**`LimitException`**, kills *that one transaction*, and rolls it back — **neighbouring orgs never
+even notice**. That isolation is multitenancy quietly doing its job, and it's exactly why the
+limits in Lesson 08 exist.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Instances & Hyperforce** — your org physically lives on an *instance* (e.g., `NA235`).
+  Modern Salesforce runs these on public-cloud infrastructure (AWS/GCP) called **Hyperforce**,
+  not on Salesforce's own data centers.
+- **Row-level tenant isolation** — every row in the shared database carries an **`OrgId`**. The
+  multitenant **query optimizer** silently adds that `OrgId` filter to *every* query, so you can
+  only ever touch your own tenant's data.
+- **Metadata-driven kernel** — there is no per-customer compiled application. The platform reads
+  your metadata at **runtime** to render layouts, run validation rules, and execute Apex. This is
+  why a config change appears instantly with no redeploy.
+- **Release cadence & API versions** — Salesforce ships **three releases a year** (Spring,
+  Summer, Winter). Each metadata component is pinned to an **API version** (e.g., `60.0`) so old
+  code keeps behaving predictably across upgrades.
+- **Editions** — Essentials / Professional / Enterprise / Unlimited gate which features (and even
+  some limits, like the number of custom objects) are available.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Salesforce is a **multitenant** cloud platform — many customers share the same

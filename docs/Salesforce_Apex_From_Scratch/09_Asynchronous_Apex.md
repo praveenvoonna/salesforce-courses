@@ -106,6 +106,52 @@ System.schedule('Nightly', '0 0 2 * * ?', new NightlyJob());
 
 ---
 
+## 🌍 Real-World Example
+
+**A nightly job re-scores 2 million Leads and pushes the hot ones to an external CRM.** No single
+synchronous transaction could touch 2M rows (50k cap) or make that many callouts. The solution
+chains the async tools:
+
+```apex
+// 1) Scheduled Apex kicks off the batch at 2 AM
+System.schedule('Nightly Lead Scoring', '0 0 2 * * ?', new LeadScoreScheduler());
+
+// 2) Batch Apex processes 2M leads in 200-row chunks, each with fresh limits
+public class LeadScoreBatch implements Database.Batchable<sObject>, Database.Stateful {
+    Integer hotCount = 0;                                   // survives across chunks
+    public Database.QueryLocator start(Database.BatchableContext bc) {
+        return Database.getQueryLocator('SELECT Id, Score__c FROM Lead');
+    }
+    public void execute(Database.BatchableContext bc, List<Lead> scope) { /* score + collect */ }
+    public void finish(Database.BatchableContext bc) {
+        System.enqueueJob(new PushHotLeadsQueueable());    // 3) Queueable makes the callouts
+    }
+}
+```
+
+**Scheduled → Batch → Queueable** is the canonical pattern for "big volume + callouts on a timer."
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The async queue is best-effort** — jobs land in a platform queue and run when resources free
+  up; there's **no guaranteed start time**, so never rely on async for instant results.
+- **`Database.Stateful`** — Batch instance variables are **reset between chunks** *unless* the class
+  implements `Database.Stateful`, which serializes member state across `execute()` calls (used for
+  running totals).
+- **Future limitations drove Queueable** — `@future` can't be chained, monitored, or accept
+  sObjects, and you get **50 per transaction**. **Queueable** returns a **Job Id** (queryable in
+  `AsyncApexJob`), accepts complex types, and chains via `System.enqueueJob` in `execute()`.
+- **Chaining depth & concurrency** — Queueable chaining is effectively unlimited in production (1
+  child per parent); Batch allows **5 concurrent** batches and queues up to 100 holding.
+- **Callouts need flags** — `@future(callout=true)` or implementing `Database.AllowsCallouts` on a
+  Batch/Queueable is required to call out from async.
+- **Testing forces synchronous run** — async jobs enqueued before `Test.stopTest()` execute
+  **synchronously** at `stopTest()`, and Batch runs **a single chunk** of up to 200 in tests.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Four async tools: **Future** (simple callout), **Queueable** (chainable, complex types),

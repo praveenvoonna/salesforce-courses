@@ -103,6 +103,46 @@ Because `static` lives for the whole transaction, this stops infinite loops.
 
 ---
 
+## 🌍 Real-World Example
+
+**Keeping a parent Account's "Open Cases" counter accurate.** A roll-up summary can't be used
+(Case→Account is a lookup, not master-detail), so you use an **after** trigger with a handler:
+
+```apex
+trigger CaseTrigger on Case (after insert, after update, after delete, after undelete) {
+    new CaseTriggerHandler().run();
+}
+```
+
+The handler collects the affected `AccountId`s, runs **one** aggregate query for open-case counts,
+and updates the parents in **one** DML — fully bulk-safe for the 200 cases an email-to-case surge
+might create at once. This is the everyday job of triggers: cross-object roll-ups and side effects
+that declarative tools can't express.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Triggers fire in chunks of 200** — a data load of 10,000 records invokes your trigger **50
+  times**, each with up to 200 records and its **own** governor limits. Code that assumes
+  `Trigger.new.size() == total` is wrong.
+- **No guaranteed multi-trigger order** — if two triggers exist on one object, execution order is
+  **undefined**. This is the hard reason behind "one trigger per object."
+- **`before` vs `after` storage** — `before` fields are mutable in memory and saved with no DML;
+  in `after`, records are committed-but-not-final and **read-only** (Ids exist, so you can relate
+  children).
+- **Recursion is real** — an `after update` that issues `update` re-enters the trigger. Guard with
+  a `static` boolean (lives for the transaction) **or** a set of already-processed Ids for finer
+  control.
+- **Order of execution context** — triggers run inside the save pipeline (Lesson 05): **before**
+  triggers run *before* validation rules; **after** triggers run *after* the record is saved but
+  *before* the commit, alongside workflow field updates that can re-fire them.
+- **Trigger.isExecuting & frameworks** — mature orgs use a metadata-driven framework
+  (handler + dispatcher) so logic is **ordered, toggleable, and unit-testable** by calling the
+  handler directly without DML.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**One trigger per object**, logic in a **handler class**, and everything **bulkified** for

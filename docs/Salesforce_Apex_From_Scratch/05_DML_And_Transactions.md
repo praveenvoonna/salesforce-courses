@@ -108,6 +108,49 @@ mysterious behavior like "why did my field value change after the trigger?"
 
 ---
 
+## 🌍 Real-World Example
+
+**A nightly integration syncs 10,000 orders from an ERP.** Some rows have bad data. If you used a
+plain `insert orders;`, **one bad record fails all 10,000**. Instead, use partial success so good
+records still save and you log the failures for a retry queue:
+
+```apex
+Database.SaveResult[] results = Database.insert(orders, false);   // allOrNone = false
+List<Error_Log__c> failures = new List<Error_Log__c>();
+for (Integer i = 0; i < results.size(); i++) {
+    if (!results[i].isSuccess()) {
+        failures.add(new Error_Log__c(
+            Payload__c = JSON.serialize(orders[i]),
+            Message__c = results[i].getErrors()[0].getMessage()));
+    }
+}
+if (!failures.isEmpty()) insert failures;
+```
+
+This is the standard pattern for resilient integrations: **partial save + dead-letter log**.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The order of execution** — on save, Salesforce runs a fixed sequence: system validation →
+  **before** triggers → custom validation rules → duplicate rules → save (not committed) →
+  **after** triggers → assignment/auto-response/workflow field updates → **flows** → roll-up
+  summaries → **commit**. Knowing this explains "why did my value change after my trigger ran?"
+- **Workflow field updates re-fire triggers** — a workflow/flow field update **re-runs** before &
+  after triggers (once), a frequent source of recursion.
+- **Governor cost** — the limit is **150 DML *statements***, not records; one statement can touch
+  **10,000 rows**. So `update bigList;` is one statement — `update` in a loop is the killer.
+- **Savepoints aren't free** — each `Database.setSavepoint()` consumes from the DML-statement
+  limit and snapshots state; rolling back restores records but **not** `static` variables or sent
+  emails.
+- **Mixed DML** — you can't DML **setup objects** (`User`, `Group`, `PermissionSetAssignment`) and
+  non-setup objects in the same transaction; split the setup DML into a `@future`/Queueable.
+- **Implicit rollback** — an **uncaught** exception rolls the *entire* transaction back; a
+  **caught** one does not, so already-done DML stays unless you roll back to a savepoint.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"DML writes records and runs as **one all-or-nothing transaction**; an uncaught exception

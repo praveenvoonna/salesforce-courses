@@ -105,6 +105,53 @@ services use `webservice static` methods exposed via WSDL.
 
 ---
 
+## 🌍 Real-World Example
+
+**Syncing a payment from Salesforce to Stripe, then recording the result.** This hits the classic
+**callout-after-DML** rule: you can't insert the Payment record *and then* call out in the same
+synchronous transaction. The robust pattern is **Queueable** (callout first, DML second):
+
+```apex
+public class StripeChargeJob implements Queueable, Database.AllowsCallouts {
+    private Id invoiceId;
+    public StripeChargeJob(Id invoiceId) { this.invoiceId = invoiceId; }
+    public void execute(QueueableContext ctx) {
+        HttpRequest req = new HttpRequest();
+        req.setEndpoint('callout:Stripe/v1/charges');     // Named Credential handles auth
+        req.setMethod('POST');
+        HttpResponse res = new Http().send(req);
+        update new Payment__c(Id = invoiceId,
+                              Status__c = res.getStatusCode() == 200 ? 'Paid' : 'Failed');
+    }
+}
+```
+
+The **Named Credential** (`callout:Stripe`) injects the API key and refreshes OAuth tokens — no
+secret ever appears in code or in a queryable field.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Why callout-after-DML is blocked** — uncommitted DML holds **open database locks**; an HTTP
+  callout can take seconds, and the platform won't hold locks across the network. Do callouts
+  **before** DML, or move them **async** where each context commits independently.
+- **Named Credentials do the heavy lifting** — they store the endpoint + auth protocol (Basic,
+  OAuth 2.0, JWT, AWS SigV4), handle **token refresh**, and let you swap endpoints per sandbox vs
+  prod without code changes; **External Credentials** (newer) separate the secret from the URL.
+- **Callout limits** — **100 callouts**/transaction, default **10 s** timeout (max **120 s**), and
+  a cumulative response-size cap; long jobs belong in async.
+- **Remote Site Settings vs Named Credentials** — raw endpoints need a Remote Site allow-list;
+  Named Credentials cover that *and* auth, so they're preferred.
+- **Platform Events & CDC internals** — these publish to a durable **event bus** (Kafka-like) with
+  replay Ids and at-least-once delivery; subscribers (Apex triggers, external CometD clients) read
+  asynchronously, decoupling producer from consumer.
+- **Idempotency matters** — because async/retried callouts can fire twice, real integrations send
+  an **idempotency key** so the external system de-dupes (Stripe, for instance, supports this
+  natively).
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Outbound = **HTTP callouts** authenticated via **Named Credentials** (no hard-coded

@@ -101,6 +101,38 @@ for (Account a : [SELECT Id FROM Account]) { … }  // streams in chunks of 200
 
 ---
 
+## 🌍 Real-World Example
+
+**A data migration imports 500,000 Contacts and a trigger silently kills it.** The `ContactTrigger`
+had a single innocent-looking line — a SOQL query inside the loop to fetch each Contact's Account.
+For 1 record in a sandbox demo it worked; at 200 records per batch it hit **101 SOQL queries** and
+threw `System.LimitException: Too many SOQL queries: 101`, failing the entire load.
+
+The fix is the bulkified pattern from §4: collect the `AccountId`s, run **one** query into a
+`Map<Id, Account>`, then loop in memory. The same trigger now processes the full 500k import
+without ever crossing a limit — because each 200-record batch uses exactly **1** query.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Limits are per-execution-context, not per-org** — each trigger invocation, batch chunk, or web
+  request gets a **fresh** counter. This is why Batch Apex (Lesson 09) can process millions of rows:
+  every `execute()` chunk resets the budget.
+- **Sync vs async caps** — async contexts roughly **double** several limits (e.g., 200 SOQL,
+  **60,000 ms** CPU, **12 MB** heap). Moving heavy work async is often the cleanest fix.
+- **CPU time excludes waiting** — the 10,000 ms CPU clock counts **your** code (loops, parsing,
+  serialization) but **not** time spent waiting on SOQL/DML/callouts. Nested loops and big JSON
+  parses are the usual culprits.
+- **`Limits` class for self-defense** — defensive code checks `Limits.getQueries()` vs
+  `Limits.getLimitQueries()` to bail out or re-queue before hitting a wall.
+- **Map lookups are O(1)** — replacing a nested `for` (O(n²)) with a `Map.get()` is the single
+  biggest CPU win; at 200×200 that's 40,000 iterations vs 200.
+- **Heap holds live objects** — large query results, big strings, and base64 blobs accumulate;
+  SOQL for-loops chunk results to 200 to keep heap flat.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Governor limits exist because Salesforce is **multitenant**; the big ones are **100 SOQL,

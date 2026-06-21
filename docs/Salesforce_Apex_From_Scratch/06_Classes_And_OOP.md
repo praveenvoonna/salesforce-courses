@@ -124,6 +124,52 @@ switch on status {
 
 ---
 
+## 🌍 Real-World Example
+
+**Enterprise teams structure Apex with the "Enterprise Patterns" (fflib) layering** so logic
+stays testable and out of triggers:
+
+- **Selector** — all SOQL for an object lives here (`AccountSelector.selectByIds()`).
+- **Domain** — record-level business rules (`Accounts.validate()`), called from the trigger handler.
+- **Service** — cross-object use cases (`InvoiceService.generateForOpps()`).
+
+```apex
+public with sharing class InvoiceService {
+    public static void generateForOpps(Set<Id> oppIds) {
+        List<Opportunity> opps = new OpportunitySelector().selectWithLines(oppIds);
+        List<Invoice__c> invoices = new List<Invoice__c>();
+        for (Opportunity o : opps) invoices.add(buildInvoice(o));   // pure, unit-testable
+        insert invoices;
+    }
+}
+```
+
+The trigger calls the **service**, the service calls the **selector** — each class has one job,
+so you can unit-test the logic without wiring up a trigger.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **`static` initialization & lifetime** — `static` members initialize **once per execution
+  context** the first time the class is touched, then persist for the whole transaction. A `static`
+  block runs lazily at first reference, not at "program start" (there is none).
+- **Inner classes are first-class** — nested classes are commonly used as **DTOs/wrappers** for
+  `@AuraEnabled` return shapes and `@InvocableVariable` request/response types; they can be `public`
+  for serialization.
+- **Properties compile to methods** — `{ get; set; }` generates hidden accessor methods, so you can
+  add logic later without breaking callers; a `get`-only property is a computed value.
+- **No multiple inheritance** — a class `extends` **one** class but can `implements` **many**
+  interfaces; `virtual`/`abstract`/`override` gate the vtable, and methods are *not* virtual by
+  default (unlike Java).
+- **Interfaces wire you into the platform** — `Database.Batchable`, `Queueable`, `Schedulable`,
+  `HttpCalloutMock`, `Comparable`, and `Database.Stateful` are all interfaces *you* implement so
+  Salesforce can call *your* code at the right time.
+- **`with sharing` is inherited at runtime** — sharing mode is determined by the **outermost** Apex
+  in the stack unless a class is `with`/`without`; `inherited sharing` defers to the caller.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"I keep logic in **small, single-responsibility classes** (service/selector/domain), not in
