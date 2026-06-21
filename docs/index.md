@@ -18,12 +18,12 @@ Salesforce skills — explained in plain English, with analogies and ready-to-sa
 
 <div class="welcome-note" markdown>
 
-**A little note for you 💛**
+**A little note for you, Sharmila 💛**
 
 This whole site was put together just for you. Take it one lesson at a time, at your own pace —
 there's no rush and no such thing as a silly question. Every topic starts with a simple, everyday
 analogy, so you'll always have something to hold on to before the details arrive. You've got this,
-and I'm cheering you on the whole way. 🚀
+Sharmila, and I'm cheering you on the whole way. 🚀
 
 </div>
 
