@@ -1,0 +1,132 @@
+/* ============================================================
+   Salesforce Interview Prep — custom look & feel
+   ============================================================ */
+
+:root {
+  --sf-grad: linear-gradient(120deg, #4338ca 0%, #6366f1 50%, #0ea5e9 100%);
+}
+
+/* Gradient header + tabs for a premium feel */
+.md-header,
+.md-tabs {
+  background-image: var(--sf-grad);
+}
+
+/* ---------- Reading typography ---------- */
+.md-typeset {
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+.md-typeset p,
+.md-typeset li {
+  letter-spacing: 0.1px;
+}
+
+/* Section headings: airy, with a soft underline */
+.md-typeset h2 {
+  margin-top: 2.4em;
+  padding-bottom: 0.25em;
+  font-weight: 700;
+  border-bottom: 2px solid var(--md-default-fg-color--lightest);
+}
+.md-typeset h3 {
+  margin-top: 1.6em;
+  font-weight: 700;
+}
+
+/* ---------- Blockquotes as soft callouts ---------- */
+.md-typeset blockquote {
+  border-left: 0.25rem solid var(--md-primary-fg-color);
+  border-radius: 0.4rem;
+  padding: 0.4rem 1rem;
+  color: var(--md-default-fg-color);
+  background: color-mix(in srgb, var(--md-primary-fg-color) 8%, transparent);
+}
+
+/* ---------- Tables: rounded with a colored header ---------- */
+.md-typeset table:not([class]) {
+  border-radius: 0.6rem;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+.md-typeset table:not([class]) th {
+  background: var(--md-primary-fg-color);
+  color: #fff;
+  font-weight: 600;
+}
+.md-typeset table:not([class]) tr:hover {
+  background: color-mix(in srgb, var(--md-primary-fg-color) 6%, transparent);
+}
+
+/* ---------- Code blocks ---------- */
+.md-typeset pre > code {
+  border-radius: 0.5rem;
+}
+.md-typeset code {
+  border-radius: 0.3rem;
+}
+
+/* ============================================================
+   Homepage hero
+   ============================================================ */
+.hero {
+  margin: 0 0 2.5rem;
+  padding: 3rem 1.5rem 3.2rem;
+  border-radius: 1rem;
+  text-align: center;
+  color: #fff;
+  background: var(--sf-grad);
+  box-shadow: 0 14px 40px rgba(79, 70, 229, 0.28);
+}
+.hero h1 {
+  margin: 0 0 0.4rem;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.15;
+}
+.hero p {
+  margin: 0.3rem auto 1.4rem;
+  max-width: 36rem;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+.hero .md-button {
+  margin: 0.3rem 0.4rem;
+  border-radius: 2rem;
+  border-color: #fff;
+  color: #fff;
+}
+.hero .md-button--primary {
+  background: #fff;
+  color: #4338ca;
+  border-color: #fff;
+}
+.hero .md-button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border-color: #fff;
+}
+.hero .md-button--primary:hover {
+  background: #f1f5ff;
+  color: #4338ca;
+}
+
+/* ============================================================
+   Course cards (homepage grid)
+   ============================================================ */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 0.85rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.13);
+  border-color: var(--md-primary-fg-color);
+}
+.md-typeset .grid.cards > ul > li:nth-child(1) { border-top: 3px solid #6366f1; }
+.md-typeset .grid.cards > ul > li:nth-child(2) { border-top: 3px solid #0ea5e9; }
+.md-typeset .grid.cards > ul > li:nth-child(3) { border-top: 3px solid #10b981; }
+.md-typeset .grid.cards > ul > li:nth-child(4) { border-top: 3px solid #f59e0b; }

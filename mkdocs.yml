@@ -2,36 +2,52 @@ site_name: Salesforce Interview Prep
 site_description: >-
   From-scratch, interview-ready courses on Salesforce Apex, LWC, Data Cloud, and Agentforce.
 site_url: https://salesforceprep.netlify.app/
+repo_url: https://github.com/praveenvoonna/salesforce-courses
+repo_name: praveenvoonna/salesforce-courses
 docs_dir: docs
+
+extra_css:
+  - stylesheets/extra.css
 
 theme:
   name: material
+  language: en
   icon:
     logo: material/cloud
+    repo: fontawesome/brands/github
   favicon: https://raw.githubusercontent.com/squidfunk/mkdocs-material/master/material/templates/assets/images/favicon.png
+  font:
+    text: Inter
+    code: JetBrains Mono
   features:
     - navigation.instant
+    - navigation.instant.progress
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.tracking
     - navigation.indexes
     - navigation.top
+    - navigation.footer
+    - navigation.path
     - toc.follow
     - search.suggest
     - search.highlight
     - search.share
     - content.code.copy
+    - content.code.annotate
     - content.tooltips
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: indigo
-      accent: indigo
+      accent: deep purple
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
-      accent: indigo
+      accent: deep purple
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode

@@ -1,14 +1,23 @@
-# 🌩️ Salesforce — From Scratch to Interview-Ready
+---
+title: Home
+hide:
+  - toc
+---
 
-Welcome! This is a friendly, **from-zero** guide to the four Salesforce skills that show up most
-in job descriptions and interviews: **Apex, Lightning Web Components (LWC), Data Cloud, and
-Agentforce**.
+<div class="hero" markdown>
 
-Everything is explained in **plain, everyday language** first (with analogies), then the real
-mechanics, then **interview-ready one-liners** you can repeat almost word-for-word.
+# 🌩️ Salesforce, made simple
+
+Your friendly, **from-zero** path to becoming **interview-ready** on the four most in-demand
+Salesforce skills — explained in plain English, with analogies and ready-to-say interview lines.
+
+[Start with Apex →](Salesforce_Apex_From_Scratch/README.md){ .md-button .md-button--primary }
+[Explore the courses ↓](#the-four-courses){ .md-button }
+
+</div>
 
 !!! tip "How to read this"
-    Pick a course from the left menu (or the cards below) and work the lessons **in order**
+    Pick a course from the **top tabs** (or the cards below) and work the lessons **in order**
     (00 → end). Every lesson follows the same shape:
     **🧠 "The One Idea"** (a plain-English analogy) → the real details → **🎤 "Say this in the
     interview"** lines. Don't skip the analogies — they're the hooks that make the rest stick.
