@@ -115,8 +115,8 @@ Now you get powerful behavior for free: a **roll-up summary** on `Student__c` ca
 - **Relationship fields store an Id** — a lookup/master-detail field physically holds the
   18-character Id of the related row; it's a foreign key the platform indexes.
 - **Master-detail is a stricter FK** — it adds **required parent**, **ownership/sharing
-  inheritance**, and **cascade delete**. Limits: **max 2** master-detail and **~25 lookups** per
-  object; a junction's *first* MD controls sharing and the detail's owner.
+  inheritance**, and **cascade delete**. Limits: **max 2** master-detail and **up to 40 lookups**
+  per object; a junction's *first* MD controls sharing and the detail's owner.
 - **Polymorphic relationships** — some fields point to **multiple object types**: `Task.WhatId`
   (Account/Opportunity/…), `OwnerId` (User or Queue). Query them with `TYPEOF` in SOQL.
 - **External Ids & upsert** — marking a field as **External Id** lets `upsert` match on it instead
