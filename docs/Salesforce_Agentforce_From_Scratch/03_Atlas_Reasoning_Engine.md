@@ -74,6 +74,37 @@ You shape the **boundaries**; the engine handles the **orchestration**.
 
 ---
 
+## 🌍 Real-World Example
+
+**The agent that fixed its own mistake mid-conversation.** A customer asked an insurance agent *"is
+my claim approved and when do I get paid?"* Atlas interpreted two intents, routed to the Claims
+topic, and called "Get Claim Status" — which returned *"pending: missing document."* Instead of
+blurting "your claim is pending" and stopping, the **evaluate/reflect** step recognized the goal
+wasn't met, so it looped: it called a second action to identify the missing document and then
+responded with *"it's pending because we still need your repair invoice — here's how to upload it."*
+A bare LLM would have hallucinated a payout date; the reasoning loop turned a dead-end into a
+helpful next step.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The loop is interpret → plan → ground → act → evaluate → respond** — the *evaluate* step is what
+  separates an agent from a one-shot LLM call; it can loop until the goal is met or it escalates.
+- **Hybrid reasoning splits deterministic from probabilistic** — routing/tool-calls run as
+  predictable code paths while only language understanding and option-selection hit the LLM, giving
+  control *and* flexibility.
+- **Grounding is injected inside the loop, not before it** — Atlas retrieves context *as part of*
+  reasoning, so it can decide *what* to fetch based on the plan, not just dump everything up front.
+- **Agent Script compiles to an Agent Graph** — newer authoring lets you define boundaries as a
+  graph Atlas executes, which is how "controllable autonomy" is actually implemented.
+- **Guardrails live in the loop** — scope checks ("does this topic have this action?") and
+  "never do X" rules are evaluated each turn, so safety can't be skipped by clever phrasing.
+- **You own boundaries; Atlas owns orchestration** — you set topics/actions/instructions/grounding;
+  it decides intent, routing, action choice, and when to loop or escalate at runtime.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**Atlas** is the reasoning engine: each turn it **interprets → routes to a topic → grounds →

@@ -77,6 +77,36 @@ agents **orchestrate** prompts, actions, grounding, and models, all under the **
 
 ---
 
+## 🌍 Real-World Example
+
+**Untangling a vendor demo.** A team evaluating Salesforce AI sat through a demo that name-dropped
+"Einstein," "Copilot," "Prompt Builder," and "Agentforce" interchangeably and left everyone
+confused about what they were actually buying. An architect redrew it as the layer cake: the
+**models + Trust Layer** are the engine and safety belt (always there), **Prompt Builder** is how
+admins write reusable generative features, **Einstein** predictions score their leads, and
+**Agentforce** is the autonomous layer that *orchestrates* all of the above toward a goal. Suddenly
+the licensing and the architecture made sense — they were buying the top layer, which depends on the
+ones beneath it.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Lower layers don't need the upper ones, but not vice-versa** — you can use Prompt Builder
+  without agents, but an agent *always* uses prompts, models, and the Trust Layer underneath it.
+- **The Trust Layer is non-optional infrastructure** — it's not a feature you toggle per use case;
+  every generative call in the stack routes through it, which is why it sits at the base.
+- **"Einstein" is a brand, not a component** — it spans predictive (scoring) and generative
+  (content); interviewers probe whether you can separate the marketing umbrella from the actual
+  pieces.
+- **Predictive/generative/agentic is a capability ladder** — agents frequently *consume* predictive
+  scores and generative prompts as actions, so the three aren't competitors but layers of
+  composition.
+- **Data Cloud is the cross-cutting context layer** — it isn't in the AI stack per se; it feeds
+  grounding into every layer, which is why "Agentforce + Data Cloud" is the recurring pairing.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Salesforce AI is layered: **foundation models + Einstein Trust Layer** at the base, **Prompt

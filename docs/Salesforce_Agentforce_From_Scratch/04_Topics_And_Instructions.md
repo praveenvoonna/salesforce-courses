@@ -75,6 +75,35 @@ The engine combines both — global guardrails plus job-specific behavior.
 
 ---
 
+## 🌍 Real-World Example
+
+**A two-word description fix that raised routing accuracy 30 points.** A bank's agent kept sending
+"I want to close my account" to the *Account Updates* topic, where it tried to update a field and
+failed, instead of to the *Account Closure* topic that escalated to retention. The team's only
+change was the classification descriptions: Account Updates became *"address, phone, email, and
+contact-preference changes on an existing open account"* and Account Closure became *"requests to
+cancel, close, or terminate an account, or to stop service entirely."* No code, no new actions —
+just sharper, non-overlapping descriptions — and the misroutes nearly vanished in the next test run.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The classification description is the routing algorithm** — Atlas matches user intent to it
+  semantically, so writing it well is the single highest-leverage thing you do to an agent.
+- **Overlap is the #1 cause of misrouting** — two topics with similar descriptions force an
+  ambiguous choice; distinct, non-overlapping scopes are what make routing deterministic-feeling.
+- **Instructions are policy, not suggestions** — imperative, bounded, sequenced phrasing
+  ("first verify identity, then retrieve") is followed in order; vague prose yields vague behavior.
+- **Reference actions by name in instructions** — naming the action ("use the Escalate action")
+  tells the engine exactly what to call, tightening the link between policy and capability.
+- **Two instruction levels combine** — agent-level guardrails apply everywhere; topic-level rules
+  add job-specifics, so global rules live once and aren't duplicated per topic.
+- **A fallback/escalate topic prevents dead-ends** — a catch-all topic for unmatched intents is
+  what turns "I don't understand" into a graceful human hand-off.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"A **topic** = name + **classification description** (drives routing) + **instructions** +

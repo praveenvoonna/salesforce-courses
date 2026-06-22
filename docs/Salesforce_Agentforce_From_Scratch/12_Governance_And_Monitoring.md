@@ -76,6 +76,38 @@ succeed treat it like a managed product: **measure, diagnose, refine, repeat** �
 
 ---
 
+## 🌍 Real-World Example
+
+**A dashboard that caught a quiet failure before customers complained.** A retailer's agent had been
+live for a month. The Agentforce analytics dashboard showed deflection holding steady at ~75%, but
+the *escalation rate on the Returns topic* had crept from 8% to 22% over two weeks. Digging into the
+transcripts and reasoning traces, the team found a recent policy change meant the "Check Eligibility"
+action now returned "ineligible" for a common case, so the agent kept escalating. They fixed the
+action's logic, added the failing transcripts to the regression set, redeployed — and escalations
+dropped back. No customer ever filed a complaint; the *monitoring* caught it first.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Governance = permissions + scope + policy + change control** — least-privilege agent user,
+  topic/action scoping, instructions as policy, and metadata ALM together bound what the agent can
+  do.
+- **Monitoring has four lenses** — transcripts (what happened), reasoning traces (why), analytics
+  (deflection/escalation/topic usage trends), and the Trust Layer audit trail (safety/PII).
+- **Metrics reveal drift before users do** — a creeping escalation or falling resolution rate is an
+  early warning that a description, action, or upstream data changed.
+- **The prod feedback loop mirrors testing** — spot in analytics → diagnose with the trace → fix
+  wording/action/grounding → add to regression set → redeploy → keep watching.
+- **Cost is usage-metered** — Agentforce is licensed by conversations/actions (credit-style), so
+  minimal grounding, scoped actions, and avoiding needless model calls cut both latency and spend.
+- **Platform limits still bite** — Apex/Flow actions obey governor limits and callout timeouts even
+  inside an agent, so efficient action design is an operational concern, not just a build one.
+- **Human-in-the-loop is a governance control** — gating high-risk actions (large refunds, deletes)
+  behind human approval is how autonomy stays responsible at scale.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"I **govern** with a **least-privilege agent user**, scoped topics/actions, and instructions as

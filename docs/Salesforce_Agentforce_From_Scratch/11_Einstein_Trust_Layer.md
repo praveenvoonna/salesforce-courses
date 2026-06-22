@@ -70,6 +70,36 @@ and audited** automatically — you get safety **by default**, not as an add-on.
 
 ---
 
+## 🌍 Real-World Example
+
+**The SSN that the model never actually saw.** A health insurer's agent summarized a member's case
+that contained an SSN and a phone number. On the way *in*, the Trust Layer masked those to
+placeholders, so the LLM received *"member [SSN] called from [PHONE]"* — it literally never received
+the real digits. The model generated a summary referencing the placeholders; on the way *out*,
+demasking restored the real values for the authorized rep, toxicity scoring confirmed the reply was
+safe, and the whole exchange was logged to the audit trail. The provider stored nothing and trained
+on nothing. That round-trip is exactly what let a regulated insurer use generative AI on PHI at all.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **It wraps every call in both directions** — request path (secure retrieval → grounding → masking
+  → prompt defense) and response path (toxicity scoring → demasking → audit) — not just a filter on
+  output.
+- **Masking happens before data leaves the platform** — the LLM sees placeholders, so PII exposure
+  is prevented at the boundary rather than cleaned up afterward.
+- **Demasking is per-authorized-user** — placeholders are restored only for someone allowed to see
+  the real values, so masking doesn't break the experience for the right person.
+- **Zero retention is a contractual + technical guarantee** — partner LLMs don't store or train on
+  prompts/responses, which is the specific thing that makes it enterprise-grade.
+- **Prompt defense resists injection** — system guardrails counter "ignore your instructions"
+  attacks, which is why adversarial testing (L09) pairs with the Trust Layer.
+- **It's platform-wide, not Agentforce-only** — Prompt Builder, Einstein features, and agents all
+  route through it, so agents inherit masking, scoring, and auditing *by default*.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"The **Einstein Trust Layer** wraps every AI call **both ways**: **secure grounding + PII

@@ -71,6 +71,36 @@ This is why "Agentforce + Data Cloud" is such a common pairing in interviews.
 
 ---
 
+## 🌍 Real-World Example
+
+**The same question, two very different answers.** A customer asked a support agent *"how long do I
+have to return this?"* Without grounding, the LLM recited the generic 30-day policy from its
+training — wrong for this customer. With grounding on, the agent retrieved order #4471's ship date
+(structured, via a Data Graph) *and* the relevant returns-policy article (unstructured, via semantic
+search) and answered: *"Because you're a Platinum member and it shipped on May 2nd, you have until
+June 16th."* Two retrieval styles, one grounded answer — and the difference between a complaint and a
+satisfied customer.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **RAG = retrieve → augment → generate** — the entire quality of the answer hinges on step 1;
+  garbage or missing retrieval means the model falls back to guessing.
+- **Structured and unstructured use different retrieval** — fielded data comes from
+  queries/Data Graphs (fast, pre-joined); free text is chunked, embedded as vectors, and fetched by
+  semantic search; one answer can blend both.
+- **Vectors enable meaning-based matching** — "damaged item" finds the returns policy even without
+  shared keywords, because embeddings encode semantic similarity, not string overlap.
+- **Data Graphs trade storage for latency** — pre-joining a profile into a denormalized structure
+  lets grounding read fast enough to not stall the conversation.
+- **Minimal context beats maximal context** — extra grounding raises token cost and adds noise that
+  can *degrade* the answer, so "retrieve relevant + minimal" is a real performance lever.
+- **Consent and freshness ride along** — grounded fields respect sharing/consent (L11), and
+  real-time reads keep facts current, so grounding is governed, not a data free-for-all.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**Grounding** = open-book AI: I retrieve real data (CRM, **Data Cloud** profile/insights,

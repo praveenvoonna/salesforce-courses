@@ -65,6 +65,35 @@ build a small service agent in the lab.
 
 ---
 
+## 🌍 Real-World Example
+
+**A telecom that cut handle time without cutting staff.** A mobile carrier's support line was
+drowning in "where's my order / change my plan / why is my bill high" tickets. They deployed an
+Agentforce Service Agent on web chat and WhatsApp. For *"my bill jumped this month,"* the agent
+grounded on the customer's real usage and plan, explained the overage in plain language, offered a
+better plan, and applied it after confirmation — no rep involved. Anything outside its guardrails
+(a disputed charge over a threshold) was escalated to a human with the full context attached. The
+routine 70% it handled end-to-end; the human team focused on the hard 30%.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **"Goal → plan" is the whole leap** — a chatbot maps an utterance to a scripted branch; an agent
+  takes a *goal* and lets Atlas assemble the steps at runtime, so it handles requests no one
+  scripted.
+- **Autonomy is bounded, not unlimited** — the agent can only call the actions you attached and
+  must obey its instructions, so "autonomous" means *plans freely within a fenced yard*, not "does
+  anything."
+- **It runs on your real data** — because agents sit inside Salesforce, grounding reads live CRM and
+  Data Cloud, which is what makes the actions (refund, address change) real rather than simulated.
+- **Escalation is a first-class outcome** — a well-built agent treats "hand to a human" as a valid
+  success path, not a failure, which is what makes autonomy safe to ship.
+- **The four ingredients map to four lessons** — goal/role (this lesson), reasoning (Atlas, L03),
+  actions (L05), grounding + guardrails (L07 + L11) — keep that map and the course stays coherent.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Agentforce builds **autonomous agents** that, given a **goal**, **reason** about the steps and

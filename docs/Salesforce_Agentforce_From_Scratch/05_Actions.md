@@ -81,6 +81,35 @@ the record/data you bind into the template.
 
 ---
 
+## 🌍 Real-World Example
+
+**Reusing a five-year-old Flow as an AI capability.** A logistics company already had an
+autolaunched Flow that created a "redelivery" case with all the right validations and approvals.
+Rather than rebuild that logic for the agent, they exposed the *existing* Flow as an action. Now when
+a customer says *"I missed my delivery, can you resend it tomorrow?"*, the agent maps the date into
+the Flow's input, runs the same battle-tested process, and returns the new case number. For a
+trickier need — calling an external carrier API and computing a fee — they wrote one
+`@InvocableMethod` in Apex. Same agent, two action types, mostly reused assets.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **`label` and `description` are LLM-facing, not human-facing** — Atlas selects and fills actions
+  from these strings, so write them as instructions to the model, not as developer notes.
+- **The invocable signature is bulk-shaped** — `List<Request>` in, `List<Response>` out — because
+  the same Apex contract is reused across automation; the agent typically sends one element.
+- **Inputs/outputs are the contract Atlas maps** — clear input descriptions are how the engine
+  knows to pull `orderNumber` from the conversation; missing descriptions cause empty inputs.
+- **Apex actions obey all normal Apex rules** — governor limits, CRUD/FLS, `WITH USER_MODE`,
+  callout limits — the agent context doesn't exempt them (ties straight to the Apex course).
+- **Least privilege is enforced by the agent user** — actions run as the agent's user, so its
+  permission set, not the action code, is the real security boundary.
+- **Pick Flow for low-code, Apex for complex/integration** — single-responsibility actions compose
+  better, because Atlas chains small verbs more reliably than one giant do-everything action.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Actions are the agent's **hands** — **Standard, Flow, Apex (`@InvocableMethod`), and prompt

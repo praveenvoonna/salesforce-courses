@@ -86,6 +86,34 @@ The reasoning engine follows them to stay on-rails. Good instructions = good beh
 
 ---
 
+## 🌍 Real-World Example
+
+**One agent, three jobs, zero crossed wires.** A retailer built a single Service Agent with three
+topics: *Order Management*, *Returns*, and *Escalate to Human*. When a customer wrote *"the jacket I
+got is too small, can I swap it?"*, the agent routed to **Returns** (not Order Management), checked
+eligibility with the Returns topic's actions, and started the return — it never even *saw* the
+"Issue Refund" action because that lived under a different topic it wasn't in. When a customer asked
+something off-script ("can you price-match a competitor?"), it hit the **Escalate** topic and handed
+off. The three-level structure (agent → topics → actions) is exactly what kept it from doing the
+wrong thing.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Topics are scoping boundaries, not just labels** — an action attached to Topic A is *invisible*
+  while the agent is reasoning inside Topic B, which is the core safety mechanism of the model.
+- **Routing happens on the topic's description** — Atlas matches the user's intent to topic
+  *descriptions*, so the description is effectively code that determines behavior (L04 goes deep).
+- **Actions are typed contracts** — each declares inputs/outputs, and Atlas maps conversation values
+  into those inputs, so vague input labels cause empty or wrong fills.
+- **Instructions layer at two levels** — agent-level (global persona/rules) and topic-level
+  (job-specific), and Atlas combines both, so you don't repeat global rules in every topic.
+- **You describe, the engine orchestrates** — there's no step-by-step script; the same agent handles
+  unseen phrasings because Atlas assembles topic + actions per turn at runtime.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"The hierarchy is **Agent → Topics → Actions**: topics are jobs (scoped by description),

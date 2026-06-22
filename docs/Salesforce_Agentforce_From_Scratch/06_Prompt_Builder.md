@@ -78,6 +78,35 @@ is the **generative content factory**; Agentforce is the **autonomous consumer**
 
 ---
 
+## 🌍 Real-World Example
+
+**One template, thousands of personalized renewal emails.** A SaaS company's CSMs were hand-writing
+renewal emails — slow and inconsistent. An admin built one Email prompt template grounded on the
+account: `{!Account.Name}`, the renewal date, the open-case count from a Flow resource, and a
+calculated "health score" insight from Data Cloud. Now any CSM clicks "draft renewal email" on an
+account and gets a tailored, on-brand draft that references *that* customer's actual usage and
+risks. The same template was later wired in as an **agent action**, so the SDR agent could send
+renewal nudges autonomously — built once by an admin, reused by a human and an agent alike.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Merge fields resolve *before* the LLM sees the prompt** — Salesforce substitutes real values for
+  placeholders at runtime, so the model receives facts, never `{!Contact.Name}` literals.
+- **Template type binds it to an object/use case** — Email, Record Summary, Field Generation, Flex —
+  the type determines the target object and where the output can be used.
+- **Grounding sources are layered** — record fields, Data Cloud attributes/insights, Flow/Apex
+  resources, and retrieved knowledge can all be merged into one template.
+- **Preview-on-real-data is the reliability loop** — previewing shows the *resolved* prompt and the
+  model output against an actual record, which is how you catch missing/wrong grounding early.
+- **Templates are versioned and Trust-Layer-wrapped** — so they're governable assets, and the same
+  masking/zero-retention guarantees apply whether a human or an agent invokes them.
+- **A template is a reusable action** — the agent doesn't re-author prompts; it *invokes* the
+  governed template (L05), which is why Prompt Builder is the "content factory" for Agentforce.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**Prompt Builder** makes **reusable, grounded prompt templates** — placeholders resolved with

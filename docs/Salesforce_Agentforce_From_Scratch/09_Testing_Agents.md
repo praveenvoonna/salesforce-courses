@@ -79,6 +79,35 @@ Most fixes are **configuration**, not code.
 
 ---
 
+## 🌍 Real-World Example
+
+**The agent that passed by hand but failed at scale.** A utilities company's agent worked perfectly
+when the builder typed *"where's my bill?"* in preview. But in Testing Center, they ran 200 real
+phrasings — *"why haven't I gotten my statement,"* *"send me what I owe,"* *"my invoice is missing"*
+— and pass rate was only 68%. The reasoning traces showed the misses all routed to a generic
+*Account* topic instead of *Billing*. They fixed the Billing topic's description, re-ran the same
+200 cases, and hit 94%. Then they kept that test set as a regression suite — so the next person's
+"small tweak" couldn't silently break billing again.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Assert on behavior, not strings** — output wording varies turn to turn, so test cases check
+  *expected topic, expected action, expected outcome*, not exact text.
+- **Routing is where most failures live** — wrong-topic and mis-filled-input errors dominate, which
+  is why a test case names the expected topic and action explicitly.
+- **Preview explores, Testing Center proves** — the manual preview is for one-off debugging; batch
+  evaluation at scale is what gives a defensible pass-rate metric and regression coverage.
+- **The reasoning trace is a triage map** — wrong topic → fix description; right topic, bad inputs →
+  fix input descriptions; right action, bad answer → fix grounding/instructions.
+- **Coverage must include the unhappy paths** — edge cases, out-of-scope refusals/escalations, and
+  adversarial prompt-injection attempts, not just the happy path.
+- **Production failures become regression cases** — the richest test inputs come from real
+  transcripts (L12), so the test set grows continuously rather than being written once.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Agents are **probabilistic**, so I test **behavior and outcomes** — right **topic**, right

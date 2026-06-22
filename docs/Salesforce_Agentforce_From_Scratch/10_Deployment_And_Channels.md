@@ -76,6 +76,35 @@ production traffic (Lesson 12).
 
 ---
 
+## 🌍 Real-World Example
+
+**Same brain, four front doors.** A retailer built one Service Agent in a sandbox, tested it, then
+deployed the metadata to production via the `sf` CLI. From that single definition they lit up four
+channels: an **Experience Cloud** chat widget on the website, **WhatsApp** for order updates,
+**Slack** for internal store-associate questions, and the **Agent API** behind their mobile app.
+Each channel reused the *exact same* topics and actions — but the customer-facing ones ran with
+tighter guardrails and identity checks, while the internal Slack one ran with employee permissions
+and broader data access. One build, governed differently per door.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The agent definition is metadata** — so it moves through normal Salesforce ALM (sandbox → test →
+  deploy → activate) with change sets, packages, or the CLI, just like any platform feature.
+- **A channel is a surface, not a copy** — web, in-app, Slack, messaging, internal UI, and the
+  Agent API all point at one agent definition; you don't fork the agent per channel.
+- **Customer- vs employee-facing differ in posture, not build** — the same topics/actions run, but
+  permissions, identity verification, and guardrails are tuned to the audience.
+- **The agent user gates everything at runtime** — channels may add connections (Messaging channel,
+  Slack app, connected app for the API), but what the agent can *do* is bounded by its user.
+- **Escalation/hand-off must be wired per deployment** — a go-live isn't done until human hand-off,
+  grounding sources, and monitoring are connected in the *target* org.
+- **Go-live is the start of the loop** — production traffic feeds monitoring (L12), which feeds the
+  regression test set (L09), which feeds the next iteration.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"I build an agent **once** and expose it on **multiple channels** — web/Experience Cloud,
