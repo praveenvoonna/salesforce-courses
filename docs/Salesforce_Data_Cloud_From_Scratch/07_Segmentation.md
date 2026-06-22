@@ -73,6 +73,31 @@ This is why **Engagement** data and the right **mapping/category** (Lesson 02) m
 
 ---
 
+## 🌍 Real-World Example
+
+**A win-back campaign that excludes the wrong people automatically.** A retailer built "Gold-tier US
+customers with LTV over $5,000 who haven't purchased in 90 days," then *excluded* a suppression
+segment of employees and recent complainers. The drag-and-drop filters quietly compiled into a SQL
+query over the unified profile and its calculated insights — the marketer never wrote SQL, but got a
+precise, refreshable audience ready to activate.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Filters compile to SQL** — the visual builder generates a query over DMOs and CIs; complex
+  AND/OR nesting is just boolean logic in that generated SQL.
+- **The population defines the grain** — choosing Unified Individual as the population means one row
+  per person; related/engagement filters become joins against that population.
+- **Membership is refreshed, not live** — a segment recomputes on its schedule (or on demand), so
+  freshness is a deliberate trade-off between cost and recency.
+- **Estimated size uses sampling** — the size preview is computed efficiently so you can iterate
+  without fully materializing the audience each time.
+- **CIs keep segments cheap** — filtering on a precomputed LTV insight is far cheaper than
+  re-aggregating orders inside every segment evaluation.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"A **segment** is a filtered, scheduled-refresh audience of **unified profiles**, built on

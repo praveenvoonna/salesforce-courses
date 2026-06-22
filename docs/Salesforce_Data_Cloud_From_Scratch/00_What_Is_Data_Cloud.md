@@ -69,6 +69,33 @@ profile (unified individual); then the team acts on it (segmentation/activation)
 
 ---
 
+## 🌍 Real-World Example
+
+**An airline finally recognizes its own frequent flyer.** The same traveler booked on the website
+as "Jonathan Smith," used the mobile app as "jon.smith@email," and held loyalty card #4471 — three
+disconnected records across three systems. After Data Cloud unified them, a single delayed-flight
+alert could trigger a personalized rebooking offer that *knew* he was Platinum tier with 180k miles.
+Before, each channel treated him as a stranger; now every Salesforce app sees one person.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **CDP ≠ CRM ≠ CDW** — a CRM stores operational records a rep edits; a data warehouse stores
+  analytics; a **CDP** specializes in unifying *customer* data into a real-time, activatable
+  profile. Data Cloud blurs the line by being a CDP built on a lakehouse.
+- **The unified profile is a graph, not a row** — identity resolution links many source records to
+  one Unified Individual while keeping the links, so you can always trace a value back to its
+  origin.
+- **Near-real-time, not magic** — streaming sources update profiles in seconds; batch sources on a
+  schedule. "Real-time" describes the ingestion + activation path, not every computation.
+- **Multitenant at lakehouse scale** — separating cheap columnar storage from compute is why it can
+  hold billions of engagement events without a traditional database's cost.
+- **It's a foundation, not a destination** — there's no end-user "Data Cloud app"; its value
+  appears when Sales, Service, Marketing, and Agentforce consume the profile.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Data Cloud is Salesforce's **CDP**: it **connects, harmonizes, unifies, and activates**

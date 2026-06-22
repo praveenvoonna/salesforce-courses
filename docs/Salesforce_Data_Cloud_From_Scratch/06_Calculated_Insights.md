@@ -76,6 +76,32 @@ CIs convert raw events into the **decision-ready numbers** the business actually
 
 ---
 
+## 🌍 Real-World Example
+
+**One Lifetime Value metric, reused everywhere.** Instead of each marketer re-deriving "total spend"
+in every campaign, a retailer built a single LTV calculated insight summing all orders per Unified
+Individual. That one CIO now drives a VIP segment, personalizes emails with a points balance, and
+gives Agentforce a number to reference — all from one definition. When the calculation logic
+changed, it changed in exactly one place.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **A CIO is itself a DMO** — the insight's output is stored as a queryable object, which is why
+  segments, activation, and AI can all consume it like any other DMO.
+- **Batch is a scheduled aggregation; streaming is a rolling window** — batch CIs recompute the
+  whole metric on a schedule; streaming CIs maintain a metric over a moving time window (e.g., last
+  30 minutes) continuously.
+- **Definitions are SQL aggregations** — dimensions are your GROUP BY, measures are SUM/AVG/COUNT;
+  the UI builder compiles down to the same SQL the Query API would run.
+- **State gates usability** — a CI must reach *active* before downstream features can read it; a
+  processing CI silently produces nothing.
+- **Granularity drives cost** — overly fine dimensions multiply rows and compute; compute a metric
+  once at the right grain rather than re-deriving it inside every segment.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"A **Calculated Insight** is a reusable metric (LTV, AOV, CSAT) computed over DMOs and stored

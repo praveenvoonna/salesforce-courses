@@ -82,6 +82,32 @@ Loyalty Members┘
 
 ---
 
+## 🌍 Real-World Example
+
+**Three "customer" tables become one queryable person.** A bank had retail customers in core
+banking, applicants in a loan system, and card holders in a third platform — three DLOs with three
+different schemas. Mapping all three into the single **Individual** DMO meant an analyst could
+finally write *one* query for "all our customers," and a segment could target a person regardless of
+which system first knew them.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The layers have distinct API suffixes** — DLOs end in `__dll`, DMOs in `__dlm`; you query DMOs
+  downstream, and the suffix is a quick way to tell which layer a SQL query touches.
+- **Mapping moves metadata, not (much) data** — a DLO→DMO mapping tells the engine how to *present*
+  the harmonized view; it's a transformation definition, not a second physical copy you maintain by
+  hand.
+- **Many-to-one is the whole point** — multiple DLOs collapsing into one DMO is what creates
+  harmonization; the DMO becomes the single semantic object every feature reads.
+- **Unified DMOs are produced by a process** — the Unified Individual isn't mapped manually;
+  identity resolution generates it and maintains link records back to each source.
+- **Custom DMOs extend, they don't replace** — adding a custom DMO is fine, but reusing standard
+  ones preserves out-of-the-box interoperability with Marketing Cloud, CRM, and Agentforce.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**DLO** is the **raw** landing object, **DSO** the **normalized** stream view, and **DMO** the

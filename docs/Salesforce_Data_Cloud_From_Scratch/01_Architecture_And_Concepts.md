@@ -76,6 +76,33 @@ onto these standard objects so everything speaks one language. You can extend it
 
 ---
 
+## 🌍 Real-World Example
+
+**A retailer traces one purchase through every station.** A loyalty member's in-store purchase
+enters via the POS data stream (landing in a DLO), gets mapped to the Sales Order DMO, links to her
+Unified Individual after identity resolution, pushes her Lifetime Value insight past $5,000,
+qualifies her for the "VIP, no recent purchase" segment, and finally activates into a win-back
+email. The architecture is just those six stations in order — and being able to name them is what
+makes debugging tractable.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Lakehouse = open table formats** — Data Cloud stores data in open columnar formats
+  (Iceberg/Parquet-style), which is what enables zero-copy sharing with Snowflake/BigQuery without
+  duplicating storage.
+- **Data Spaces are logical, not separate orgs** — they partition data, segments, and permissions
+  within one Data Cloud instance for brand/region isolation, without multi-tenant overhead.
+- **DLO/DSO/DMO are layers, not copies you manage** — the DSO is auto-created to normalize the DLO;
+  you mainly curate the DLO→DMO mapping and the platform handles the plumbing between.
+- **Storage and compute are separate** — segmentation, identity resolution, and insights are jobs
+  that scan the lakehouse on demand, so cost scales with *processing*, not just stored volume.
+- **The Customer 360 model is a shared contract** — because every Salesforce cloud agrees on the
+  same DMO schema, mapping once makes data usable everywhere downstream.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"The pipeline is **ingest → map → unify → insights → segment → activate**; everything in Data

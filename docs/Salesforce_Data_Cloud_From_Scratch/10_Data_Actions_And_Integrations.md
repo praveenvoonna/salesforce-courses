@@ -78,6 +78,32 @@ Expect interview questions on **why zero-copy matters** (governance + avoiding s
 
 ---
 
+## 🌍 Real-World Example
+
+**A high-value abandoned cart pings a rep in seconds.** When a Platinum customer's cart crossed
+$2,000 and sat idle, a Data Action fired a Platform Event that triggered a Flow, which created a task
+for the account rep and started a Marketing Cloud journey — all in near real-time, no nightly batch.
+Meanwhile the company's analysts kept querying that customer's warehouse data via zero-copy, never
+duplicating a row.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Data Actions are event-driven, not polled** — they publish to the Platform Event bus, invoke
+  Flows, or hit webhooks when a change or threshold occurs, making Data Cloud reactive.
+- **Zero-copy works both directions** — federation lets Data Cloud read warehouse data in place as
+  external DMOs; data sharing exposes Data Cloud data back to the warehouse — both avoid physical
+  copies and sync lag.
+- **Open formats make zero-copy possible** — because storage uses open table formats,
+  Snowflake/BigQuery/Databricks can read the same files without ingestion.
+- **Pick the API by direction** — Ingestion API brings data in, Query API reads out, Profile API
+  serves fast single-profile reads; the wrong one usually means fighting latency or limits.
+- **Governance is the real driver** — zero-copy's biggest win is a single governed source of truth,
+  avoiding stale duplicate copies scattered across systems.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**Data Actions** make Data Cloud reactive — fire events to **Platform Events, Flows,

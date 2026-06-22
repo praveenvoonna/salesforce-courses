@@ -75,6 +75,32 @@ every request.
 
 ---
 
+## 🌍 Real-World Example
+
+**"Why is my segment empty?" solved in five minutes.** A marketer's high-value segment returned zero
+members. An analyst opened Data Explorer, ran a quick SQL `SELECT` against the Unified Individual and
+Sales Order DMOs, and saw the order amounts had landed as text, not numbers — so the `> 5000` filter
+never matched. A mapping/transformation fix corrected it. Being able to query the actual data turned
+a mystery into a two-line diagnosis.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **It's ANSI SQL, not SOQL** — Data Cloud supports real JOINs, aggregates, and window functions
+  across DMOs, unlike SOQL's relationship-only traversal, because it's a lakehouse, not the CRM
+  database.
+- **Suffixes signal the layer** — `__dlm` (DMO) is the harmonized layer you usually query; `__dll`
+  (DLO) is raw and used mainly for debugging ingestion.
+- **The Query API is synchronous SQL over REST** — apps, notebooks, and ETL tools authenticate via
+  OAuth and get rows back, which is how external tools pull unified data out.
+- **Segments and CIs are SQL underneath** — both compile to queries the same engine runs, so
+  understanding SQL demystifies how the no-code builders behave.
+- **Data Graphs trade storage for latency** — they pre-join and denormalize a profile into a
+  JSON-like structure so real-time reads (personalization, Agentforce) avoid expensive live joins.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Data Cloud uses **standard ANSI SQL** (with real JOINs/aggregates), via **Data Explorer** or

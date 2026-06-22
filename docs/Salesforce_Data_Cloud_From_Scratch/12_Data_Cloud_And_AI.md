@@ -71,6 +71,33 @@ pairs this with the **Einstein Trust Layer** (Agentforce course) so AI uses your
 
 ---
 
+## 🌍 Real-World Example
+
+**An agent that knows *your* order, not a generic policy.** A customer asked a service chatbot "when
+can I return my purchase?" A generic LLM would recite the standard policy. Grounded on Data Cloud,
+the Agentforce agent retrieved order #4471's ship date and the customer's loyalty-extended return
+window via a Data Graph, and answered with *her* specific deadline. The difference between a
+frustrating bot and a helpful one was the grounding data underneath.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **RAG = retrieve, augment, generate** — Data Cloud retrieves relevant facts, those facts are
+  injected into the LLM prompt, and the model generates an answer constrained by them, sharply
+  reducing hallucination.
+- **Unstructured grounding needs vectors** — documents and knowledge articles are chunked, embedded
+  as vectors, and stored in a search index so semantic (meaning-based) retrieval finds relevant
+  text, not just keyword matches.
+- **Structured grounding uses Data Graphs** — for profile/order/insight facts, a pre-joined Data
+  Graph delivers low-latency reads so the agent isn't running big JOINs mid-conversation.
+- **The Trust Layer wraps it** — sensitive fields are masked, prompts aren't retained by the model
+  provider, and access/consent are respected, so grounding stays secure.
+- **Quality is bounded by the data** — grounding only helps if the underlying unified data is
+  accurate, consented, and governed (Lesson 11); bad data grounds the AI in bad facts.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Data Cloud **grounds** Einstein/Agentforce: it supplies the **unified profile, insights, and

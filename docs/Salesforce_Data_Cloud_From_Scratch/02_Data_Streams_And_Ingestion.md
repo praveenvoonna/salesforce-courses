@@ -77,6 +77,33 @@ custom fields yourself (Lesson 04).
 
 ---
 
+## 🌍 Real-World Example
+
+**A media company captures binge-watching as it happens.** Their website fires viewing events
+through the Web SDK as a *streaming* data stream — every episode start lands in Data Cloud within
+seconds — while subscriber records sync nightly from CRM as a *batch* stream. The streaming
+engagement data lets a "just finished the season finale" segment trigger a next-show recommendation
+the same evening, something a nightly batch could never do.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Primary key + modified-date drive upserts** — Data Cloud uses the declared primary key to decide
+  insert vs update and the record-modified field to keep the latest version; getting these wrong
+  causes duplicate or stale rows.
+- **Category is structural, not cosmetic** — Profile vs Engagement vs Other determines how data
+  participates in identity resolution and time-series insights, which is why changing it later
+  hurts.
+- **The Ingestion API has two modes** — a streaming endpoint for low-latency events and a bulk
+  endpoint for large file loads; both land in the same DLO.
+- **Refresh modes differ by source** — full refresh replaces the dataset, upsert merges by key, and
+  streaming appends continuously; connector capabilities constrain your choices.
+- **Field selection is a cost lever** — every ingested column consumes storage and processing
+  credits, so trimming at ingestion is the cheapest place to control spend.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"A **data stream** ingests one source into a **DLO**, defining fields, **category** (Profile /

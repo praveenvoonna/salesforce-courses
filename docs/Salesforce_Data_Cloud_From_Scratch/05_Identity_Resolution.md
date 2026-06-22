@@ -76,6 +76,32 @@ This is sometimes called **survivorship** — deciding which attribute value "su
 
 ---
 
+## 🌍 Real-World Example
+
+**A shared family email merged two people into one.** A retailer's first ruleset matched purely on
+email, so a husband and wife who shared one address collapsed into a single Unified Individual — and
+she started receiving his order confirmations. The fix was a stricter composite rule (email **plus**
+matching name) and treating the shared email as a weaker signal. This over-merge/under-merge
+balancing act is the daily reality of identity resolution.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **A ruleset is a set of OR'd match criteria** — any one criterion matching links the records, so
+  each criterion you add *loosens* matching; tightening means making individual criteria more
+  specific (composite keys).
+- **Reconciliation answers survivorship** — when records merge, conflicting field values need a
+  winner chosen by recency, source priority, or frequency; this is configured per ruleset.
+- **It runs as a scheduled, incremental process** — new and changed data is reprocessed, so
+  unification is eventually consistent, not instantaneous on every write.
+- **The unified record keeps source links** — the Unified Individual references every contributing
+  source record, which is what lets Data Explorer show *why* two records merged.
+- **Match keys depend entirely on mapping** — fuzzy/exact rules only work on attributes mapped and
+  normalized in Lesson 04; poor input guarantees poor unification regardless of rule tuning.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Identity resolution uses **match rules** (how records are the same) and **reconciliation

@@ -76,6 +76,31 @@ and supports **consent** per contact point (Lesson 11).
 
 ---
 
+## 🌍 Real-World Example
+
+**A 40% match rate jumps to 90% after one cleanup.** A telco's identity resolution kept failing
+because one source stored phones as `(555) 123-4567` and another as `+15551234567`. Adding a
+transformation to normalize every phone to E.164 *before* matching — plus lowercasing all emails —
+let the match rules suddenly recognize the same people across systems. No rule change; just clean,
+harmonized input feeding the unified profile.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Unmapped = invisible** — a DLO field that isn't mapped to a DMO simply doesn't exist for
+  segmentation, insights, or AI; mapping is the gate to the entire downstream platform.
+- **Contact Points model real life** — separating email/phone/address into their own DMOs lets one
+  person have many of each, with per-contact-point consent that activation later relies on.
+- **Transforms run inline** — batch and streaming transformations apply as data flows toward the
+  DMO, so normalization happens *before* identity resolution reads the keys.
+- **Formula fields vs transforms** — lightweight derivations can be formula fields on the DMO, while
+  heavier reshaping/filtering belongs in batch or streaming transforms.
+- **Key attributes are the match fuel** — name, email, phone, and source IDs determine match
+  quality; normalizing their *format* matters as much as mapping them at all.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**Mapping** connects raw **DLO** fields to standard **DMO** fields so everything is

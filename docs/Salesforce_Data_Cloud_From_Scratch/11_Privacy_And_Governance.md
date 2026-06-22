@@ -71,6 +71,31 @@ Less data = less risk and lower cost.
 
 ---
 
+## 🌍 Real-World Example
+
+**A "delete my data" request that actually deletes everything.** When an EU customer invoked their
+right to be forgotten, Data Cloud's privacy handling propagated the deletion across the Unified
+Individual *and* every linked source record — CRM, web, loyalty — not just one copy. Because the
+profile kept lineage links back to each source, the company could prove the data was removed
+everywhere, satisfying the GDPR audit.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Consent lives on the contact point** — consent objects attach to Contact Point Email/Phone, so
+  enforcement is per-channel and travels with the unified profile into every activation.
+- **Privacy requests fan out via links** — because the unified profile references its sources,
+  deletion and restriction requests propagate across the graph rather than orphaning copies.
+- **Data Spaces + permissions enforce least privilege** — partitioning plus permission sets and
+  field-level controls limit who can see, segment, or activate which data.
+- **Lineage enables audits** — tracing a value DMO → DSO → DLO → source is what lets you answer
+  "where did this come from?" for regulators and for debugging.
+- **Retention is a risk control** — setting retention on raw/old data limits exposure and cost; data
+  minimization at ingestion and activation shrinks the compliance surface.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Because Data Cloud builds **one profile per person**, I treat **consent** (per contact point)
