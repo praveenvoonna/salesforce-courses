@@ -109,6 +109,34 @@ Service** (Lesson 07), giving cached record access **without Apex**.
 
 ---
 
+## 🌍 Real-World Example
+
+**A related-contacts panel that stays in sync for free.** On an Account page, a
+`@wire(getContacts, { accountId: '$recordId' })` panel lists the account's contacts. When the user
+navigates from Acme to Globex, the `$recordId` change re-fires the wire automatically and the list
+updates — no event wiring, no manual fetch. After the user adds a contact through an *imperative*
+call, a single `refreshApex` repopulates the cached list so the new row appears immediately instead
+of showing stale data.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **`cacheable=true` is a contract** — it promises the method is side-effect-free, letting the
+  Lightning Data cache store the result keyed by method + parameters; identical calls across
+  components are served from cache, not the server.
+- **Wires are reactive subscriptions** — the wire service holds the result and pushes new values
+  when reactive params change or the cache is invalidated; you never call a wire, it calls you.
+- **`refreshApex` invalidates that cache entry** — it re-executes the provisioner and updates every
+  component bound to the same wired result, which is why you must keep the *whole* result object,
+  not just `.data`.
+- **Imperative calls bypass the cache** — they return a Promise and never auto-refresh, so you own
+  error handling and refresh timing.
+- **Errors are normalized** — wire and Apex errors arrive as a structured object
+  (`error.body.message`), so a reusable `reduceErrors` helper is common in production apps.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"`@wire` is **declarative, cached, reactive** and needs **`@AuraEnabled(cacheable=true)`**;

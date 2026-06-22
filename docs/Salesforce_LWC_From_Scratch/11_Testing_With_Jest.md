@@ -106,6 +106,33 @@ errors into a `@wire`.
 
 ---
 
+## 🌍 Real-World Example
+
+**A failing test that saved a release.** A developer refactored a component and accidentally renamed
+the event it fired from `select` to `selected`. The parent silently stopped working — but a Jest
+test that asserted the `select` event fired turned red in CI before the code ever reached an org.
+The fix took two minutes instead of a production hotfix, because the test ran in Node on the pull
+request, no org required.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Tests run in jsdom, not a browser or org** — `@salesforce/sfdx-lwc-jest` renders components into
+  a simulated DOM in Node, so there's no network, no real Salesforce, and tests finish in
+  milliseconds.
+- **Wire adapters are mocked emitters** — the harness replaces real wires with test adapters you
+  control via `emit()`, letting you feed success data, empty results, or errors deterministically.
+- **Rendering is async** — property changes apply on the microtask queue, so tests must
+  `await Promise.resolve()` (or a `flushPromises` helper) before querying the DOM, mirroring runtime
+  batching.
+- **The shadow boundary still applies** — you query through `el.shadowRoot`, the same encapsulation
+  rule as production.
+- **Apex imports are virtual mocks** — `jest.mock(..., { virtual: true })` stubs the
+  `@salesforce/apex/...` module because that path doesn't physically exist in Node.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"LWC uses **Jest via `sfdx-lwc-jest`** in **Node**: I `createElement`, set `@api` props, append

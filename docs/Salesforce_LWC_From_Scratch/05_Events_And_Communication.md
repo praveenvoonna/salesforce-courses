@@ -107,6 +107,35 @@ LMS works **across LWC, Aura, and Visualforce** on the same page — the modern 
 
 ---
 
+## 🌍 Real-World Example
+
+**A filter sidebar and a results grid that don't know each other exist.** On a property-search page,
+the filter component and the results component sit in different regions of the Lightning page, so
+they're not parent and child. When a user picks "3 bedrooms," the filter component **publishes** to
+a Lightning Message Channel; the results grid is **subscribed** and re-queries. Neither component
+holds a reference to the other — they communicate purely through the channel, so either can be
+moved, removed, or reused elsewhere without touching the other.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Events are real DOM events** — `CustomEvent` rides the browser's event system; `bubbles` lets it
+  climb the DOM tree and `composed` lets it cross shadow boundaries. Both default to `false` to
+  keep components encapsulated.
+- **The `detail` payload should be primitive/serializable** — across the shadow boundary LWC may
+  hand objects by reference, so passing immutable copies avoids parents accidentally mutating child
+  state.
+- **Listener naming is fixed** — the framework maps `on<eventname>` attributes to listeners at
+  compile time, which is why event names must be lowercase with no camelCase.
+- **LMS is a singleton bus** — the Lightning Message Service is page-scoped and bridges LWC, Aura,
+  and Visualforce; `MessageContext` ties a subscription to the component's lifecycle so it can be
+  cleaned up.
+- **Subscriptions must be released** — an LMS subscription kept past `disconnectedCallback` becomes
+  a zombie listener firing into a dead component (see Lesson 09).
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**Properties down, events up.** Child fires a **`CustomEvent`** with a `detail` payload; parent

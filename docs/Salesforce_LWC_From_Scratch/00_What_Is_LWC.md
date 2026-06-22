@@ -67,6 +67,34 @@ touch Aura to maintain existing code or use the few features only Aura has."*
 
 ---
 
+## 🌍 Real-World Example
+
+**A bank rebuilds its agent console and the page suddenly feels snappy.** Their old Aura "360°
+customer view" stitched together a dozen Aura components, and every tab switch lagged. Rebuilt in
+LWC, the same screen rendered noticeably faster — because LWC ships far less framework code to the
+browser and uses native DOM APIs instead of Aura's heavier abstraction layer. Same data, same org;
+the agents' verdict was simply "it just feels faster now." The only thing that changed was the
+framework underneath.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **LWC compiles, Aura interprets** — at deploy time LWC transpiles your modern JS (ES modules,
+  decorators) into standards-compliant code, so the browser does less work at runtime. Aura
+  resolves much more of its component model in the browser.
+- **The `c-` namespace** — `<c-my-component>` uses `c` because the default org namespace is empty;
+  a packaged namespace (e.g. `acme`) renders as `<acme-my-component>`. The browser's Custom
+  Elements registry maps that tag to your class.
+- **Synthetic shadow DOM** — older browsers lacked native Shadow DOM, so LWC ships a "synthetic
+  shadow" polyfill that emulates encapsulation in JS; modern orgs can opt into native shadow for
+  better performance (Lesson 10).
+- **The interop boundary** — when an Aura component hosts an LWC, Aura passes attributes **down**
+  and listens for events **up**; the LWC has no idea it's inside Aura. That clean boundary is why
+  migration can be incremental.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"LWC is Salesforce's modern UI framework built on **native Web Components** — custom elements,

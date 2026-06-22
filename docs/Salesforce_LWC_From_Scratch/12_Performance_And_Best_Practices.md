@@ -80,6 +80,32 @@ handleKeyup(event) {
 
 ---
 
+## 🌍 Real-World Example
+
+**The report page that froze the laptop.** A `lightning-datatable` was loading 10,000 rows at once
+and a search box called Apex on every keystroke. The page took eight seconds to render and stuttered
+while typing. The team paginated to 50 rows, added a 300 ms **debounce** on the search, and switched
+repeated reads to cached `@wire`. Render time dropped to under a second and the keystroke lag
+vanished — same data, just disciplined fetching.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Two cache layers cut round-trips** — `cacheable=true` Apex and LDS both cache on the client
+  keyed by inputs, so repeated identical reads never hit the server or count against limits.
+- **Diffing cost scales with the DOM you touch** — stable `key`s and array reassignment let LWC
+  update only the changed nodes; index keys or in-place mutation can force re-creating entire lists.
+- **Debounce vs throttle** — debounce waits for a pause (ideal for search-as-you-type); throttle
+  caps frequency (ideal for scroll/resize). Picking the right one avoids needless Apex calls.
+- **Client checks are UX, not security** — Apex from LWC runs in **system mode** by default, so
+  CRUD/FLS must be enforced server-side (`WITH USER_MODE`); client validation only improves the
+  experience.
+- **Getters run every render** — keep them pure and cheap; expensive computation belongs in
+  precomputed/memoized fields, not in a getter the diff engine calls on every render.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"I default to **cached, declarative** data (`@wire` cacheable + LDS), keep imperative Apex for

@@ -96,6 +96,31 @@ the UI APIs can't express. Many real apps mix both.
 
 ---
 
+## 🌍 Real-World Example
+
+**Two components, one record, always in sync.** A record page shows a `lightning-record-form` for
+editing an Account and, beside it, a custom summary component reading the same fields via
+`getRecord`. An agent edits the phone number in the form and saves — and the summary updates
+instantly, with **no code connecting the two**. They both read from the *same* LDS cache entry for
+that record id, and LDS notifies every subscriber the moment the record changes.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **One cache entry per record id + fields** — LDS (built on the UI API) stores records keyed by
+  id; requesting overlapping fields shares storage, and any update fans out to all subscribers.
+- **FLS and sharing are enforced by the platform** — the UI API returns only fields the user can
+  see and respects record access, so you get security without writing `WITH USER_MODE`.
+- **`@salesforce/schema` imports are real dependencies** — referencing `Account.Name` creates a
+  deploy-time dependency and compile-time typo checking, unlike a quoted field string.
+- **Spanning fields need explicit import** — to read `Account.Owner.Name` you import that spanning
+  field; LDS then fetches the related data the UI API exposes.
+- **LDS is single-record by design** — it can't do aggregates or multi-object queries, which is
+  precisely the boundary where Apex takes over.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"**LDS** gives cached, synchronized, **FLS-aware CRUD without Apex** — via

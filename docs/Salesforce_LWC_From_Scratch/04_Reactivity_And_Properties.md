@@ -100,6 +100,34 @@ Use sparingly — events (Lesson 05) are usually the better, more decoupled choi
 
 ---
 
+## 🌍 Real-World Example
+
+**The classic "the screen won't update" bug.** A developer built a settings panel that mutated
+`this.config.theme = 'dark'` directly and couldn't understand why the live preview didn't change.
+Reassigning the whole object — `this.config = { ...this.config, theme: 'dark' }` — or adding
+`@track` fixed it instantly. This exact symptom is one of the most common LWC questions on
+developer forums, and it traces straight back to *how* LWC observes changes.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Reactivity via a membrane** — LWC wraps reactive fields; a top-level reassignment is observed,
+  but a deep mutation inside a non-tracked object isn't, because the engine only sees the top-level
+  setter fire.
+- **`@track` adds deep observation** — it wraps the object/array in a reactive Proxy so nested
+  changes are detected; modern guidance is to prefer immutable reassignment with spreads for
+  clarity and predictability.
+- **`@api` is one-way and enforced** — public props are set by the parent; mutating them in the
+  child is overwritten on the next parent render and breaks the unidirectional data-flow contract.
+- **The `$` makes wire params reactive** — `'$recordId'` subscribes the wire to that field, so any
+  change re-invokes the adapter; a literal value wires only once.
+- **Re-renders are batched and async** — multiple property changes in one tick coalesce into a
+  single render on the microtask queue, which is exactly why Jest tests must `await` before
+  asserting.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Fields are **reactive by default** on reassignment; **`@api`** exposes public, read-only-in-child

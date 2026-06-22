@@ -119,6 +119,33 @@ Slots make components **composable** — the parent supplies content into named 
 
 ---
 
+## 🌍 Real-World Example
+
+**A support queue that never flickers.** A case-list component shows a spinner while loading, the
+list when data arrives, and a friendly "You're all caught up" when empty — all via
+`lwc:if/elseif/else`. Each row uses `key={case.Id}`. When an agent closes a case and the list
+refreshes, only that one row disappears; the other 40 rows stay put with no flicker and the
+agent's scroll position is preserved — because LWC matched the surviving rows by their **stable
+keys** instead of rebuilding the whole list.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Keys drive reconciliation** — during diffing LWC matches old and new items by `key`; a stable
+  id lets it move or remove a single node, while the array index *changes* when items shift,
+  forcing wholesale re-creation and losing input focus and scroll state.
+- **Directives are compile-time** — `for:each`, `lwc:if`, and `iterator` aren't runtime attributes;
+  the template compiler turns them into loops and conditionals inside the generated render function.
+- **No arbitrary expressions by design** — templates allow only property/getter references, not
+  `{a + b}`, both to keep rendering predictable and to reduce the injection surface; logic lives in
+  getters.
+- **The root `<template>` emits no node** — it's the render boundary, not an element in the DOM.
+- **Slots are projection, not copying** — slotted content stays owned (and styled) by the parent;
+  the child only declares *where* it lands.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Bindings are **one-way** (JS→DOM); for conditionals I use **`lwc:if/elseif/else`**, for

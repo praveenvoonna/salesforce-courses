@@ -88,6 +88,33 @@ encapsulation for a component. Use it deliberately — you lose isolation.
 
 ---
 
+## 🌍 Real-World Example
+
+**The third-party theme that politely failed.** A marketing team dropped a global CSS theme onto a
+page hoping to recolor an embedded LWC's buttons. Nothing changed — and that was the *correct*
+behavior: the shadow DOM kept the component's internals isolated from outside styles. To actually
+theme it, the team used the component's exposed CSS custom properties (`--brand`) and SLDS styling
+hooks, recoloring it **intentionally** instead of by accident.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Synthetic vs native shadow** — by default Salesforce uses a JS "synthetic shadow" polyfill that
+  scopes styles by adding generated attributes to elements; orgs can enable native shadow where the
+  browser enforces isolation directly, which is faster.
+- **Scoping is per-component** — the compiler rewrites your selectors so `.title` only matches
+  elements inside that component's template, guaranteeing no cross-component class collisions.
+- **Custom properties pierce the boundary** — CSS variables inherit *through* shadow roots by
+  design, which is exactly why theming uses `--vars` and SLDS styling hooks rather than reaching
+  into a component's internals.
+- **`:host` targets the element itself** — it styles the custom element's outer box and can react to
+  host classes/attributes (`:host(.active)`).
+- **Light DOM opts out** — `static renderMode = 'light'` renders without a shadow root so global CSS
+  and some libraries/SEO crawlers can reach in, at the cost of isolation.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"Each LWC's CSS is **scoped by the shadow DOM**, so styles don't leak and class names never

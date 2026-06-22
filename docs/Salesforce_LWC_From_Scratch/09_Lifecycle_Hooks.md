@@ -89,6 +89,34 @@ gone.
 
 ---
 
+## 🌍 Real-World Example
+
+**The dashboard that slowly ate the browser.** A real-time chart started a `setInterval` poll in
+`connectedCallback` but never cleared it. Each time a user opened and closed the tab, another timer
+kept running against a destroyed component — by afternoon the page had dozens of zombie pollers and
+ground to a halt. Adding `clearInterval` in `disconnectedCallback` fixed the leak. This
+create/destroy symmetry — set up in connect, tear down in disconnect — is the whole point of
+lifecycle hooks.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Hooks fire in a guaranteed order** — parent `constructor` → child `constructor` → child
+  `connectedCallback` → child `renderedCallback` → parent `renderedCallback`; children complete
+  before the parent's render finishes.
+- **`renderedCallback` runs after *every* render** — setting reactive state there unconditionally
+  schedules another render, creating an infinite loop; a one-time guard flag is the standard fix.
+- **`@api` props aren't ready in the constructor** — the framework sets public props *after*
+  construction, so any initialization that reads them belongs in `connectedCallback`.
+- **`errorCallback` is an error boundary** — it catches errors thrown in the render/lifecycle of
+  *descendant* components (not its own event handlers or async callbacks), enabling graceful
+  fallback UI.
+- **Disconnect can be followed by reconnect** — moving a node within the DOM can fire disconnect
+  then connect again, so cleanup logic must be idempotent.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"I fetch data and subscribe in **`connectedCallback`** (where `@api` props are ready), clean

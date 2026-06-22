@@ -98,6 +98,32 @@ imported by the controller. Only HTML + JS + meta are required.
 
 ---
 
+## 🌍 Real-World Example
+
+**One `addressForm` component, eleven different pages.** A retailer needed an address-entry widget
+on the account page, the contact page, a guest-checkout community, and several flows. Because the
+bundle's meta XML declared all of those `targets`, admins simply dragged the *same* component onto
+every surface in App Builder — no code changes per page. Later, when the address validation rules
+changed, the team edited one component and every one of those pages updated at once.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **The bundle is the unit of deployment** — Salesforce treats the folder as a single
+  `LightningComponentBundle` metadata item; all files (HTML, JS, meta, CSS) deploy together.
+- **`isExposed` + `targets` gate visibility** — without `isExposed=true` the component is invisible
+  to App Builder/Flow even if the code is flawless; `targets` decide *which* builders see it, and
+  `targetConfigs` declare design-time properties admins can set.
+- **The default export is the component** — the framework imports your file and instantiates the
+  `default` export, which is why exactly one class per `.js` serves as the entry point.
+- **Reactive fields are wrapped** — the compiler turns class fields into reactive properties behind
+  getter/setter membranes, so an assignment can schedule a re-render.
+- **The template compiles to a render function** — the `.html` isn't parsed at runtime; it's
+  compiled into a JS function that produces a virtual DOM the engine diffs against the live DOM.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"An LWC bundle is **HTML (template)**, **JS (controller extending `LightningElement`)**, and

@@ -88,6 +88,33 @@ from a Git-tracked DX project**, not clicking through change sets.
 
 ---
 
+## 🌍 Real-World Example
+
+**A five-person team stops overwriting each other's work.** Before SFDX they shared one sandbox and
+clobbered each other's changes most weeks. After moving to a Git-tracked DX project, each developer
+spins a fresh scratch org from `config/project-scratch-def.json`, builds a feature, and opens a pull
+request. CI then creates its *own* scratch org, deploys the branch, and runs Apex + Jest tests
+automatically. A new hire was productive in under an hour — because the entire org shape lives in
+version control, not in someone's memory.
+
+---
+
+## 🔬 Under the Hood (In-Depth)
+
+- **Source format vs metadata format** — DX stores metadata as readable, decomposed source files;
+  the CLI converts to/from the old Metadata API zip format under the hood when deploying.
+- **Source tracking** — scratch orgs (and tracking-enabled sandboxes) remember which files changed
+  locally vs in the org, so deploy/retrieve only move deltas. `sf project deploy preview` shows the
+  diff before you push.
+- **The Dev Hub** — scratch orgs are allocated against your Dev Hub's daily limits; the scratch
+  definition file declares edition, features, and settings, so every org is **reproducible**.
+- **Auth tokens, not passwords** — `sf org login web` stores an OAuth refresh token locally; CI
+  uses the **JWT** flow with a private key so no human login is needed.
+- **`sfdx-project.json`** — declares your package directories and default API version; it's the
+  file that tells the CLI this folder is a DX project.
+
+---
+
 ## 🎤 Say this in the interview
 
 - *"I develop with **Salesforce DX**: source in VS Code, the **`sf` CLI** to deploy, and
